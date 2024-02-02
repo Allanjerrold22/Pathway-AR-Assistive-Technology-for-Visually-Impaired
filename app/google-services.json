@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "239678028636",
+    "project_id": "indoornavigator-1fb19",
+    "storage_bucket": "indoornavigator-1fb19.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:239678028636:android:418fbfa3adc8d1a99d5f99",
+        "android_client_info": {
+          "package_name": "com.lowjunkie.esummit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQd_YGQau_vpLKdZdXkt7H0OzXAvzTSBU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
