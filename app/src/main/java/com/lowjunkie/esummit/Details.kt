@@ -35,7 +35,11 @@ class Details: AppCompatActivity() {
             .into(ivDetails)
 
 
-
+        btnNavigate.setOnClickListener {
+            val intent = Intent(this, HelloGeoActivity::class.java)
+            intent.putExtra("key", value)
+            startActivity(intent)
+        }
 
 
 

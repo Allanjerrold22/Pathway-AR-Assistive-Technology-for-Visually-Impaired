@@ -120,41 +120,22 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-  
+
 
         homeAdapter.setOnItemClickListener { destination->
 //           getDirection(
 //               destination.coordinateY + "," + destination.coordinateX
 //         )
+
+                val intent = Intent(this, Details::class.java)
+                intent.putExtra("key", destination)
+                startActivity(intent)
+
         }
 
     }
 
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        // in this method we are checking request
-        // code with our result code.
-        if (requestCode == REQUEST_CODE_SPEECH_INPUT) {
-            // on below line we are checking if result code is ok
-            if (resultCode == RESULT_OK && data != null) {
-
-                // in that case we are extracting the
-                // data from our array list
-                val res: ArrayList<String> =
-                    data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS) as ArrayList<String>
-
-                // on below line we are setting data
-                // to our output text view.
-            
-
-                //   outputTV.setText(
-                //     Objects.requireNonNull(res)[0]
-                // )
-            }
-        }
-    }
 
     private fun setupHomeRecyclerView(){
         homeAdapter =
