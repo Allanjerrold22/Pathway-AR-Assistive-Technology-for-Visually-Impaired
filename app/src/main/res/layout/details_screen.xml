@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+
+    <ImageView
+        android:id="@+id/ivDetails"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@drawable/tech_park"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivDetailsBg"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@drawable/details_bg"
+        app:layout_constraintTop_toBottomOf="@id/ivDetails"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+
+
+
+
+
+
+
+
+
+    <androidx.cardview.widget.CardView android:id="@+id/card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="24dp"
+        app:cardBackgroundColor="#FFFFFF"
+        app:cardElevation="10dp"
+        android:layout_margin="12dp"
+        android:padding="4dp"
+        app:cardUseCompatPadding="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:elevation="8dp"
+            android:layout_marginVertical="24dp"
+            android:layout_marginHorizontal="18dp"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineVertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5"
+                />
+
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintGuide_percent="0.65"
+                android:orientation="horizontal"/>
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_marginTop="20dp"
+                android:id="@+id/tvName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="end"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:paddingStart="8dp"
+                android:text="Tech Park"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvDept"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="end"
+                app:layout_constraintTop_toTopOf="@id/tvName"
+                app:layout_constraintBottom_toBottomOf="@id/tvName"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:paddingEnd="8dp"
+                android:text="CSE Department"
+                android:textColor="#D05D89"
+                android:textSize="14sp"
+                />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_marginTop="4dp"
+                android:id="@+id/tvLocation"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="6"
+                android:paddingHorizontal="8dp"
+                android:textAlignment="center"
+                android:text="SRM University (Tech Park Avenue) Kattankulathur 603203 Tamil Nadu India.It also has a MAC Lab in 13th floor which is recently opened by our Chairman.Currently there are around 3000+ students of CSE is studying inside Tech Park. "
+                app:layout_constraintTop_toBottomOf="@id/tvName"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:paddingTop="8dp"
+                android:textColor="#7A7A7A"
+                android:textSize="14sp" />
+
+
+            <ImageView
+                android:layout_width="32dp"
+                android:id="@+id/ivClassroom"
+                app:layout_constraintEnd_toEndOf="@id/guidelineVertical"
+                app:layout_constraintTop_toBottomOf="@id/tvLocation"
+                android:layout_marginHorizontal="52dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/classrooms"
+                android:layout_height="32dp"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_marginTop="4dp"
+                android:id="@+id/tvClassrooms"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="100 classrooms"
+                app:layout_constraintTop_toBottomOf="@id/ivClassroom"
+                app:layout_constraintStart_toStartOf="@id/ivClassroom"
+                app:layout_constraintEnd_toEndOf="@id/ivClassroom"
+
+                android:textColor="#7A7A7A"
+                android:textSize="12sp" />
+
+
+            <ImageView
+                android:id="@+id/ivLabs"
+                android:layout_width="32dp"
+                android:layout_marginTop="12dp"
+                app:layout_constraintStart_toStartOf="@id/guidelineVertical"
+                app:layout_constraintTop_toBottomOf="@id/tvLocation"
+                android:layout_marginHorizontal="52dp"
+                android:background="@drawable/labs"
+                android:layout_height="32dp"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_marginTop="4dp"
+                android:id="@+id/tvLabs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="80 Labs"
+                app:layout_constraintTop_toBottomOf="@id/ivLabs"
+                app:layout_constraintStart_toStartOf="@id/ivLabs"
+                app:layout_constraintEnd_toEndOf="@id/ivLabs"
+
+                android:textColor="#7A7A7A"
+                android:textSize="12sp" />
+
+
+            <ImageView
+                android:layout_width="32dp"
+                android:id="@+id/ivStudents"
+                app:layout_constraintEnd_toEndOf="@id/guidelineVertical"
+                app:layout_constraintTop_toBottomOf="@id/tvClassrooms"
+                android:layout_marginHorizontal="52dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/students"
+                android:layout_height="32dp"/>
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_marginTop="4dp"
+                android:id="@+id/tvStudents"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3000 Students"
+                app:layout_constraintTop_toBottomOf="@id/ivStudents"
+                app:layout_constraintStart_toStartOf="@id/ivStudents"
+                app:layout_constraintEnd_toEndOf="@id/ivStudents"
+
+                android:textColor="#7A7A7A"
+                android:textSize="12sp" />
+
+
+            <ImageView
+                android:id="@+id/ivFaculties"
+                android:layout_width="32dp"
+                android:layout_marginTop="12dp"
+                app:layout_constraintStart_toStartOf="@id/guidelineVertical"
+                app:layout_constraintTop_toBottomOf="@id/tvLabs"
+                android:layout_marginHorizontal="52dp"
+                android:background="@drawable/faculties"
+                android:layout_height="32dp"/>
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_marginTop="4dp"
+                android:id="@+id/tvFaculties"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="80 Students"
+                app:layout_constraintTop_toBottomOf="@id/ivFaculties"
+                app:layout_constraintStart_toStartOf="@id/ivFaculties"
+                app:layout_constraintEnd_toEndOf="@id/ivFaculties"
+                android:textColor="#7A7A7A"
+                android:textSize="12sp" />
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                app:layout_constraintTop_toBottomOf="@id/tvFaculties"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="32dp"
+                android:background="@drawable/details_card_bg"
+                android:text="View"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:layout_width="120dp"
+                android:layout_height="32dp"/>
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnNavigate"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/navigate_card_bg"
+        android:text="Navigate"
+        android:textSize="16dp"
+
+        android:layout_marginBottom="32dp"
+        android:textColor="@color/white"
+        android:textAllCaps="false"
+        android:paddingHorizontal="24dp"
+        android:layout_marginHorizontal="48dp"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"/>
+
+
+
+
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
