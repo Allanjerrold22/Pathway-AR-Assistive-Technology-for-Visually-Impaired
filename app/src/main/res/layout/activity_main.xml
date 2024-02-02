@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+
+    <ImageView
+        android:id="@+id/ivMain"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@drawable/purple_background"
+        app:layout_constraintBottom_toTopOf="@id/guideline"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/btnMap"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="18dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:backgroundTint="#FFF"
+        android:background="@drawable/map_icon"
+        android:translationZ="12dp"
+        />
+
+    <View
+        android:id="@+id/mapIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="12dp"
+        android:layout_width="55dp"
+
+        android:background="@drawable/map_icon_bg"
+        android:layout_height="55dp"/>
+
+    <ImageButton
+        android:id="@+id/btnQR"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="28dp"
+        app:layout_constraintEnd_toStartOf="@id/btnMap"
+        app:layout_constraintTop_toTopOf="@id/btnMap"
+        android:backgroundTint="#FFF"
+        android:background="@drawable/qr_icon"
+        android:translationZ="12dp"
+        />
+
+    <View
+        android:id="@+id/qrIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/mapIcon"
+        android:layout_margin="12dp"
+        android:layout_width="55dp"
+        android:background="@drawable/map_icon_bg"
+        android:layout_height="55dp"/>
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.4"
+        />
+
+
+    <TextView
+        android:text="Hey,"
+        android:textSize="26sp"
+        android:textStyle="normal"
+        android:textColor="@color/white"
+        android:layout_marginHorizontal="32dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tvWelcome"
+        android:layout_marginBottom="0dp"/>
+
+
+    <TextView
+        android:id="@+id/tvWelcome"
+        android:text="Welcome to Smart Navigator"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:layout_marginHorizontal="32dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/etSearch"
+        android:layout_marginBottom="24dp"/>
+
+    <ImageButton
+        android:id="@+id/btnMic"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:translationZ="12dp"
+        android:background="@drawable/mic"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="@id/etSearch"
+        app:layout_constraintTop_toTopOf="@id/etSearch"
+        app:layout_constraintBottom_toBottomOf="@id/etSearch"
+        />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etSearch"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:inputType="textPersonName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/ivMain"
+        android:hint="Search"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/search_bg"
+        android:padding="8dp"
+        android:layout_marginHorizontal="32dp"
+        android:drawableLeft="@drawable/search_icon"
+        android:drawablePadding="8dp"
+        />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/homeRV"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivMain"
+        android:paddingEnd="12dp"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="30dp"
+        android:clipToPadding="false"
+        />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
