@@ -37,7 +37,13 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-
+        <activity android:name="com.lowjunkie.esummit.MapActivity"
+            android:screenOrientation="locked"
+            android:exported="true"
+            />
+        <activity android:name="com.lowjunkie.esummit.HelloGeoActivity" />
+        <activity android:name="com.lowjunkie.esummit.Details" />
+        <activity android:name="com.lowjunkie.esummit.UploadCoord" />
 
         <meta-data android:name="com.google.ar.core" android:value="required" />
 

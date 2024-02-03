@@ -35,7 +35,7 @@
         android:layout_height="wrap_content">
 
 
-    <com.lj.smartnavigator.helpers.MapTouchWrapper
+    <com.lowjunkie.esummit.helpers.MapTouchWrapper
         android:id="@+id/map_wrapper"
         android:layout_width="match_parent"
         android:layout_height="400dp"
@@ -69,7 +69,7 @@
             android:layout_marginBottom="120dp"
             android:id="@+id/statusText2"
             />
-    </com.lj.smartnavigator.helpers.MapTouchWrapper>
+    </com.lowjunkie.esummit.helpers.MapTouchWrapper>
 
     </androidx.cardview.widget.CardView>
 

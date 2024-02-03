@@ -12,7 +12,7 @@ import com.google.ar.core.Session
 import com.lowjunkie.esummit.helpers.ARCoreSessionLifecycleHelper
 import com.lowjunkie.esummit.helpers.HelloGeoView
 import com.google.ar.core.exceptions.*
-import com.lj.smartnavigator.helpers.GeoPermissionsHelper
+import com.lowjunkie.esummit.helpers.GeoPermissionsHelper
 import com.lowjunkie.esummit.api.RetrofitInstance
 import com.lowjunkie.esummit.java.common.helpers.FullScreenHelper
 import com.lowjunkie.esummit.java.common.samplerender.SampleRender

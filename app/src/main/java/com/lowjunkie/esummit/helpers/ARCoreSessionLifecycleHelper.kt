@@ -22,7 +22,7 @@ import com.google.ar.core.Anchor
 import com.google.ar.core.ArCoreApk
 import com.google.ar.core.Session
 import com.google.ar.core.exceptions.CameraNotAvailableException
-import com.lj.smartnavigator.helpers.GeoPermissionsHelper
+import com.lowjunkie.esummit.helpers.GeoPermissionsHelper
 
 /**
  * Manages an ARCore Session using the Android Lifecycle API. Before starting a Session, this class
