@@ -120,6 +120,16 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        btnMap.setOnClickListener {
+            val intent = Intent(this, MapActivity::class.java)
+            startActivity(intent)
+        }
+
+        btnUpload.setOnClickListener {
+            val intent = Intent(this, AR::class.java)
+            startActivity(intent)
+        }
+
 
 
         homeAdapter.setOnItemClickListener { destination->

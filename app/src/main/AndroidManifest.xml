@@ -44,6 +44,7 @@
         <activity android:name="com.lowjunkie.esummit.HelloGeoActivity" />
         <activity android:name="com.lowjunkie.esummit.Details" />
         <activity android:name="com.lowjunkie.esummit.UploadCoord" />
+        <activity android:name="com.lowjunkie.esummit.AR" />
 
         <meta-data android:name="com.google.ar.core" android:value="required" />
 
