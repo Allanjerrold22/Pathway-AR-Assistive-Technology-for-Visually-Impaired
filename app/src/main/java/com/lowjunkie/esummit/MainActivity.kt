@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnUpload.setOnClickListener {
-            val intent = Intent(this, AR::class.java)
+            val intent = Intent(this, CreateRoute::class.java)
             startActivity(intent)
         }
 
@@ -137,9 +137,17 @@ class MainActivity : AppCompatActivity() {
 //               destination.coordinateY + "," + destination.coordinateX
 //         )
 
+            if(destination.type == "indoor"){
+                val intent = Intent(this, AR::class.java)
+                intent.putExtra("key", destination)
+                startActivity(intent)
+            }else{
                 val intent = Intent(this, Details::class.java)
                 intent.putExtra("key", destination)
                 startActivity(intent)
+            }
+
+
 
         }
 

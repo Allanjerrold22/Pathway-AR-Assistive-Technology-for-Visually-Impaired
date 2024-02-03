@@ -12,5 +12,6 @@ data class Destination(
     val imageUri: String = "",
     val coordinateY: String = "",
     val coordinateX: String = "",
+    val coordinates: String? = "",
     val type: String = ""
 ): java.io.Serializable

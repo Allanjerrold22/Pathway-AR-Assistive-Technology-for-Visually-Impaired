@@ -1,59 +1,66 @@
 package com.lowjunkie.esummit
 
-import android.R.array
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
 import android.content.res.Resources
-import android.graphics.Typeface
+import android.media.Image
 import android.net.Uri
-import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
-import android.speech.tts.UtteranceProgressListener
-import android.text.Spannable
-import android.text.SpannableStringBuilder
-import android.text.style.ForegroundColorSpan
-import android.text.style.StyleSpan
 import android.util.Log
 import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.updateLayoutParams
-import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager2.widget.CompositePageTransformer
-import androidx.viewpager2.widget.MarginPageTransformer
-import androidx.viewpager2.widget.ViewPager2
-import com.google.ar.core.Anchor
-import com.google.ar.core.Config
+import com.google.ar.core.Frame
 import com.google.ar.core.HitResult
 import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
-import com.google.ar.sceneform.Node
-import com.google.ar.sceneform.SceneView
 import com.google.ar.sceneform.math.Vector3
-import com.google.ar.sceneform.rendering.CameraStream
 import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.rendering.Renderable
-import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
-
+import com.lowjunkie.esummit.models.Destination
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import com.lowjunkie.esummit.R
-import java.lang.Exception
-import java.lang.Math.abs
 import java.util.*
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 
 class AR : AppCompatActivity(), TextToSpeech.OnInitListener {
+
+    data class EightDirection(val azimuth: Float, val name: String)
+
+    private fun calculateDirection(objectPose0: Vector3, objectPose1: Vector3): EightDirection {
+        val directionX = objectPose1.x - objectPose0.x
+        val directionY = objectPose1.y - objectPose0.y
+        val directionZ = objectPose1.z - objectPose0.z
+
+        // Calculate the azimuth angle
+        val azimuth = Math.toDegrees(Math.atan2(directionY.toDouble(), directionX.toDouble())).toFloat()
+
+        // Convert the azimuth angle to a human-readable direction
+        val name = when {
+            azimuth in -22.5..22.5 || azimuth in (360.0 - 22.5)..360.0 -> "north"
+            azimuth in 22.5..67.5 -> "northeast"
+            azimuth in 67.5..112.5 -> "east"
+            azimuth in 112.5..157.5 -> "southeast"
+            azimuth in 157.5..202.5 -> "south"
+            azimuth in 202.5..247.5 -> "southwest"
+            azimuth in 247.5..292.5 -> "west"
+            azimuth in 292.5..337.5 -> "northwest"
+            else -> "unknown"
+        }
+
+        return EightDirection(azimuth, name)
+    }
+
 
     private lateinit var arFragment: ArFragment
     var initialAnchorPosition: Vector3? = null
@@ -63,36 +70,39 @@ class AR : AppCompatActivity(), TextToSpeech.OnInitListener {
     private var model: Renderable? = null
     lateinit var tts: TextToSpeech
     private lateinit var modelUri: String
+    private var isTouched = false
     var status = 1
+    var value : Destination?= null
 
-    fun calculateOffsetFromInitialPosition(currentAnchorPosition: Vector3): String {
-        if (initialAnchorPosition != null) {
-            // Calculate the distance between the initial position and the current position
-            val dx = currentAnchorPosition.x - initialAnchorPosition!!.x
-            val dy = currentAnchorPosition.y - initialAnchorPosition!!.y
-            val dz = currentAnchorPosition.z - initialAnchorPosition!!.z
 
-            // Calculate the total offset distance
-            val offset = "${dx}, ${dy}, ${dz}"
-
-            // Return the offset distance in meters
-            return offset
-        }
-
-        // If initialAnchorPosition is not set, return 0
-        return ""
+    private fun calculateDistance(x: Float, y: Float, z: Float): Float{
+        return sqrt(x.pow(2) + y.pow(2) + z.pow(2))
     }
 
+    private fun calculateDistance(objectPose0: Vector3, objectPose1: Vector3): Float{
+        return calculateDistance(
+            objectPose0.x - objectPose1.x,
+            objectPose0.y - objectPose1.y,
+            objectPose0.z - objectPose1.z
+        )
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.ar_screen)
-        val intent = this.intent
-        val bundle = intent.getBundleExtra("item")
+
+        val extras = intent.extras
+        if (extras != null) {
+            value = extras.getSerializable("key") as Destination
+        }
+
+
+
         tts = TextToSpeech(this, this)
         tts.setSpeechRate(1.2f)
+
 
 
 
@@ -113,19 +123,65 @@ class AR : AppCompatActivity(), TextToSpeech.OnInitListener {
             loadModels()
         }
 
+        CoroutineScope(Dispatchers.Main).launch {
+            while (true){
+                if(isTouched && !tts.isSpeaking){
+
+                val coordinates = value?.coordinates?.split("$")
+
+                for(i in coordinates?.indices!!){
+                    if(i+1 == coordinates.size){
+                        break
+                    }
+                    val coordinate = coordinates[i].split(",")
+
+                    val dx = coordinate[0].toFloat()
+                    val dy = coordinate[1].toFloat()
+                    val dz = coordinate[2].toFloat()
+
+                    if(calculateDistance(scene.camera.worldPosition, Vector3(dx, dy, dz)) < 4){
+                        val coordinate = coordinates[i+1].split(",")
+
+                        val dx = coordinate[0].toFloat()
+                        val dy = coordinate[1].toFloat()
+                        val dz = coordinate[2].toFloat()
 
 
+                        val direction = calculateDirection(scene.camera.worldPosition, Vector3(dx, dy, dz))
+
+                        val dist = calculateDistance(scene.camera.worldPosition, Vector3(dx, dy, dz))
+
+                        tts.speak("Go ${direction.azimuth.toInt()} degree ${direction.name} for about ${String.format("%.1f", dist)} meters", TextToSpeech.QUEUE_FLUSH, null,"")
+
+                        break
+                    }
+
+                }
 
 
+                    val currentFrame: Frame? = arSceneView.arFrame
+                    val currentImage: Image? = currentFrame?.acquireCameraImage()
+                    val imageFormat: Int? = currentImage?.getFormat()
+                    Log.d("Tabrez", imageFormat.toString())
+                    currentImage?.close()
 
+
+                }
+                delay(2000)
+
+            }
+        }
 
     }
+
+
+
 
     private fun loadModels() {
         try{
 
             ModelRenderable.builder()
-                .setSource(applicationContext, Uri.parse("https://firebasestorage.googleapis.com/v0/b/roomer-ca0e9.appspot.com/o/Chair%20models%2FChair-1.glb?alt=media&token=70f24427-aac1-4804-a49f-9e594caa6a74"))
+                .setSource(applicationContext, Uri.parse("https://firebasestorage.googleapis.com/v0/b/indoornavigator-1fb19.appspot.com/o/dragon_ball.glb?alt=media&token=87667bab-e4dd-49c3-9396-bdd28c8785d9"))
                 .setIsFilamentGltf(true)
                 .build()
                 .thenAccept {
@@ -138,6 +194,7 @@ class AR : AppCompatActivity(), TextToSpeech.OnInitListener {
 
     }
 
+
     private fun onTapPlane(hitResult: HitResult, plane: Plane, motionEvent: MotionEvent) {
 
         if (model == null) {
@@ -146,33 +203,51 @@ class AR : AppCompatActivity(), TextToSpeech.OnInitListener {
         }
 
         // Create the Anchor.
+        if(isTouched){
+            return
+        }
         val anchor = hitResult.createAnchor()
 
-        if (initialAnchorPosition == null) {
-            initialAnchorPosition = Vector3(anchor.pose.tx(), anchor.pose.ty(), anchor.pose.tz())
-        }else{
-            val currentOffset = calculateOffsetFromInitialPosition(Vector3(anchor.pose.tx(), anchor.pose.ty(), anchor.pose.tz()))
-            Log.d("Allan", currentOffset.toString())
 
-        }
+
+        isTouched = true
 
         scene.addChild(AnchorNode(anchor).apply {
             // Create the transformable model and add it to the anchor.
+            val coordinates = value?.coordinates?.split("$")
 
-            addChild(TransformableNode(arFragment.transformationSystem).apply {
-                renderable = model
-                renderableInstance?.animate(true)?.start()
-                worldPosition = Vector3(0f,0f,0f)
-            })
+            Log.d("LJJJ",coordinates.toString())
+            for(i in coordinates?.indices!!){
+                val coordinate = coordinates[i].split(",")
 
-            addChild(TransformableNode(arFragment.transformationSystem).apply {
-                renderable = model
-                renderableInstance?.animate(true)?.start()
-                worldPosition = Vector3(1.2421134F, (-0.049562514).toFloat(), 1.008232F)
-            })
+                val dx = coordinate[0].toFloat()
+                val dy = coordinate[1].toFloat()
+                val dz = coordinate[2].toFloat()
+
+                Log.d("LJJJ", dx.toString())
+                Log.d("LJJJ", dy.toString())
+                Log.d("LJJJ", dz.toString())
+                Log.d("LJJJ", i.toString())
+                Log.d("LJJJ", "----")
+
+
+
+                addChild(TransformableNode(arFragment.transformationSystem).apply {
+                    renderable = model
+                    renderableInstance?.animate(true)?.start()
+                    worldPosition = Vector3(dx, dy, dz)
+                    translationController.isEnabled = false
+                    rotationController.isEnabled = false
+                    scaleController.isEnabled = false
+                })
+            }
+
+
+
 
         })
     }
+
 
 
 

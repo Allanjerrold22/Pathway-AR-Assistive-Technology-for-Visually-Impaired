@@ -45,6 +45,7 @@
         <activity android:name="com.lowjunkie.esummit.Details" />
         <activity android:name="com.lowjunkie.esummit.UploadCoord" />
         <activity android:name="com.lowjunkie.esummit.AR" />
+        <activity android:name="com.lowjunkie.esummit.CreateRoute" />
 
         <meta-data android:name="com.google.ar.core" android:value="required" />
 
