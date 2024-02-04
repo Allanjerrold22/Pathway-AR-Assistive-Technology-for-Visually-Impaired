@@ -4,6 +4,9 @@ import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
 import android.content.res.Resources
+import android.graphics.ImageFormat
+import android.graphics.Rect
+import android.graphics.YuvImage
 import android.media.Image
 import android.net.Uri
 import android.os.Build
@@ -23,7 +26,9 @@ import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.rendering.Renderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
+import com.google.gson.Gson
 import com.lowjunkie.esummit.models.Destination
+import com.lowjunkie.esummit.models.ImageCaption
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -36,6 +41,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -182,65 +188,105 @@ class AR : AppCompatActivity(), TextToSpeech.OnInitListener {
                 }
 
 
-                    val currentFrame: Frame? = arSceneView.arFrame
-                    val currentImage: Image? = currentFrame?.acquireCameraImage()
-                    Log.d("Tabrez",currentImage?.format.toString())
 
-
-                    // Convert the Image to a byte array
-                    val byteBufferY: ByteBuffer = currentImage?.planes?.get(0)?.buffer ?: break
-                    val byteBufferU: ByteBuffer = currentImage?.planes?.get(1)?.buffer ?: break
-                    val byteBufferV: ByteBuffer = currentImage?.planes?.get(2)?.buffer ?: break
-
-                    val sizeY = byteBufferY.remaining()
-                    val sizeU = byteBufferU.remaining()
-                    val sizeV = byteBufferV.remaining()
-
-                    val imageBytes = ByteArray(sizeY + sizeU + sizeV)
-
-                    byteBufferY.get(imageBytes, 0, sizeY)
-                    byteBufferU.get(imageBytes, sizeY, sizeU)
-                    byteBufferV.get(imageBytes, sizeY + sizeU, sizeV)
-
-                    val tempFile = createTempImageFile(imageBytes)
-
-                    val requestBody = MultipartBody.Builder()
-                        .setType(MultipartBody.FORM)
-                        .addFormDataPart("image", "image.jpg",
-                            tempFile.asRequestBody("application/octet-stream".toMediaType())
-                        )
-                        .build()
-
-// Create the request
-                    val request = Request.Builder()
-                        .url("https://1b82-2406-7400-b9-e94c-28a7-22a8-30e5-e42e.ngrok-free.app/detect")
-                        .post(requestBody)
-                        .build()
-
-// Create OkHttpClient and execute the request
-                    val client = OkHttpClient()
-                    client.newCall(request).enqueue(object : okhttp3.Callback {
-                        override fun onFailure(call: okhttp3.Call, e: IOException) {
-                            // Handle failure
-                            Log.d("TABREZ", "POCHU")
-
-                            e.printStackTrace()
-                        }
-
-                        override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
-                            // Handle success
-                            val responseBody = response.body?.string()
-                            Log.d("TABREZ", responseBody.toString())
-                            // Process the response as needed
-                        }
-                    })
-
-
-                    currentImage?.close()
 
 
                 }
                 delay(2000)
+
+            }
+        }
+
+
+        CoroutineScope(Dispatchers.Main).launch {
+            while (true){
+
+
+                        val currentFrame: Frame? = arSceneView.arFrame
+                        val currentImage: Image? = currentFrame?.acquireCameraImage()
+                        Log.d("Tabrez", currentImage?.format.toString())
+
+                        val width = currentImage?.width
+                        val height = currentImage?.height
+
+                        // Convert the YUV_420_888 image to NV21 format byte array
+                        val yuvBytes = ByteArray(width!! * height!! * 3 / 2)
+
+                        // Get the YUV planes
+                        val planes = currentImage!!.planes
+                        var buffer: ByteBuffer
+
+                        // Process each YUV plane
+                        for (i in 0 until planes.size) {
+                            buffer = planes[i].buffer
+                            val remaining = buffer.remaining()
+
+                            // Copy the data to the yuvBytes array
+                            buffer.get(yuvBytes, yuvBytes.size - remaining, remaining)
+                        }
+
+                        // Create a YuvImage from the NV21 data
+                        val yuvImage = YuvImage(yuvBytes, ImageFormat.NV21, width!!, height!!, null)
+
+                        // Create a rectangle representing the entire image
+                        val rect = Rect(0, 0, width, height)
+
+                        // Create a ByteArrayOutputStream to hold the JPEG data
+                        val outputStream = ByteArrayOutputStream()
+
+                        // Compress the YuvImage to JPEG format with a quality of 90 (adjust as needed)
+                        yuvImage.compressToJpeg(rect, 90, outputStream)
+
+                        // Convert the ByteArrayOutputStream to a ByteArray
+                        val jpegByteArray = outputStream.toByteArray()
+
+                        val tempFile = createTempImageFile(jpegByteArray)
+
+                        currentImage.close()
+
+
+                        val requestBody = MultipartBody.Builder()
+                            .setType(MultipartBody.FORM)
+                            .addFormDataPart(
+                                "image", "image.JPG",
+                                tempFile.asRequestBody("image/jpeg".toMediaType())
+
+                            )
+                            .build()
+
+// Create the request
+                        val request = Request.Builder()
+                            .url("https://1b82-2406-7400-b9-e94c-28a7-22a8-30e5-e42e.ngrok-free.app/detect")
+                            .post(requestBody)
+                            .build()
+
+// Create OkHttpClient and execute the request
+                        val client = OkHttpClient()
+                        client.newCall(request).enqueue(object : okhttp3.Callback {
+                            override fun onFailure(call: okhttp3.Call, e: IOException) {
+                                // Handle failure
+
+                                e.printStackTrace()
+                            }
+
+                            override fun onResponse(
+                                call: okhttp3.Call,
+                                response: okhttp3.Response
+                            ) {
+                                // Handle success
+                                val responseBody = response.body
+                                val res = Gson().fromJson(
+                                    responseBody?.string(),
+                                    ImageCaption::class.java
+                                )
+                                Log.d("TABREZ", res.result)
+                                tts.speak(res.result, TextToSpeech.QUEUE_FLUSH, null, "")
+
+                                // Process the response as needed
+                            }
+                        })
+
+                delay(8000)
 
             }
         }
