@@ -58,6 +58,7 @@ class AR : AppCompatActivity(), TextToSpeech.OnInitListener {
         var azimuth = Math.toDegrees(Math.atan2(directionY.toDouble(), directionX.toDouble())).toFloat()
         azimuth = ((azimuth % 360.0 + 360.0) % 360.0).toFloat()
 
+
         // Convert the azimuth angle to a human-readable direction
         val name = when {
             azimuth in -22.5..22.5 || azimuth in (360.0 - 22.5)..360.0 -> "north"
