@@ -29,11 +29,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -53,7 +55,8 @@ class AR : AppCompatActivity(), TextToSpeech.OnInitListener {
         val directionZ = objectPose1.z - objectPose0.z
 
         // Calculate the azimuth angle
-        val azimuth = Math.toDegrees(Math.atan2(directionY.toDouble(), directionX.toDouble())).toFloat()
+        var azimuth = Math.toDegrees(Math.atan2(directionY.toDouble(), directionX.toDouble())).toFloat()
+        azimuth = ((azimuth % 360.0 + 360.0) % 360.0).toFloat()
 
         // Convert the azimuth angle to a human-readable direction
         val name = when {
@@ -159,7 +162,7 @@ class AR : AppCompatActivity(), TextToSpeech.OnInitListener {
                     val dy = coordinate[1].toFloat()
                     val dz = coordinate[2].toFloat()
 
-                    if(calculateDistance(scene.camera.worldPosition, Vector3(dx, dy, dz)) < 4){
+                    if(calculateDistance(scene.camera.worldPosition, Vector3(dx, dy, dz)) < 3){
                         val coordinate = coordinates[i+1].split(",")
 
                         val dx = coordinate[0].toFloat()
@@ -181,25 +184,36 @@ class AR : AppCompatActivity(), TextToSpeech.OnInitListener {
 
                     val currentFrame: Frame? = arSceneView.arFrame
                     val currentImage: Image? = currentFrame?.acquireCameraImage()
+                    Log.d("Tabrez",currentImage?.format.toString())
 
 
                     // Convert the Image to a byte array
-                    val byteBuffer: ByteBuffer = currentImage?.planes?.get(0)?.buffer ?: break
-                    val imageBytes = ByteArray(byteBuffer.remaining())
-                    byteBuffer.get(imageBytes)
+                    val byteBufferY: ByteBuffer = currentImage?.planes?.get(0)?.buffer ?: break
+                    val byteBufferU: ByteBuffer = currentImage?.planes?.get(1)?.buffer ?: break
+                    val byteBufferV: ByteBuffer = currentImage?.planes?.get(2)?.buffer ?: break
 
-// Save the byte array as a temporary file
+                    val sizeY = byteBufferY.remaining()
+                    val sizeU = byteBufferU.remaining()
+                    val sizeV = byteBufferV.remaining()
+
+                    val imageBytes = ByteArray(sizeY + sizeU + sizeV)
+
+                    byteBufferY.get(imageBytes, 0, sizeY)
+                    byteBufferU.get(imageBytes, sizeY, sizeU)
+                    byteBufferV.get(imageBytes, sizeY + sizeU, sizeV)
+
                     val tempFile = createTempImageFile(imageBytes)
 
-// Create the request body with the file
                     val requestBody = MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
-                        .addFormDataPart("image", "image.jpg", RequestBody.create("image/jpeg".toMediaTypeOrNull(), tempFile))
+                        .addFormDataPart("image", "image.jpg",
+                            tempFile.asRequestBody("application/octet-stream".toMediaType())
+                        )
                         .build()
 
 // Create the request
                     val request = Request.Builder()
-                        .url("https://fc57-2406-7400-b9-e94c-e521-238b-39cb-37c3.ngrok-free.app")
+                        .url("https://1b82-2406-7400-b9-e94c-28a7-22a8-30e5-e42e.ngrok-free.app/detect")
                         .post(requestBody)
                         .build()
 
@@ -208,6 +222,8 @@ class AR : AppCompatActivity(), TextToSpeech.OnInitListener {
                     client.newCall(request).enqueue(object : okhttp3.Callback {
                         override fun onFailure(call: okhttp3.Call, e: IOException) {
                             // Handle failure
+                            Log.d("TABREZ", "POCHU")
+
                             e.printStackTrace()
                         }
 
@@ -238,7 +254,7 @@ class AR : AppCompatActivity(), TextToSpeech.OnInitListener {
         try{
 
             ModelRenderable.builder()
-                .setSource(applicationContext, Uri.parse("https://firebasestorage.googleapis.com/v0/b/indoornavigator-1fb19.appspot.com/o/dragon_ball.glb?alt=media&token=87667bab-e4dd-49c3-9396-bdd28c8785d9"))
+                .setSource(applicationContext, Uri.parse("https://firebasestorage.googleapis.com/v0/b/indoornavigator-1fb19.appspot.com/o/little_duck.glb?alt=media&token=5149ab74-3424-4264-ab21-7e1bf634dab8"))
                 .setIsFilamentGltf(true)
                 .build()
                 .thenAccept {
@@ -273,7 +289,6 @@ class AR : AppCompatActivity(), TextToSpeech.OnInitListener {
             // Create the transformable model and add it to the anchor.
             val coordinates = value?.coordinates?.split("$")
 
-            Log.d("LJJJ",coordinates.toString())
             for(i in coordinates?.indices!!){
                 val coordinate = coordinates[i].split(",")
 
@@ -296,6 +311,8 @@ class AR : AppCompatActivity(), TextToSpeech.OnInitListener {
                     translationController.isEnabled = false
                     rotationController.isEnabled = false
                     scaleController.isEnabled = false
+                    localScale = Vector3(0.2F,0.2F,0.2F)
+
                 })
             }
 

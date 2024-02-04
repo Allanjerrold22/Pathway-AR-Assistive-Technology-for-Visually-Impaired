@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.filament.utils.scale
 import com.google.ar.core.Anchor
 import com.google.ar.core.Config
 import com.google.ar.core.HitResult
@@ -167,7 +168,7 @@ class CreateRoute : AppCompatActivity(), TextToSpeech.OnInitListener {
         try{
 
             ModelRenderable.builder()
-                .setSource(applicationContext, Uri.parse("https://firebasestorage.googleapis.com/v0/b/indoornavigator-1fb19.appspot.com/o/dragon_ball.glb?alt=media&token=87667bab-e4dd-49c3-9396-bdd28c8785d9"))
+                .setSource(applicationContext, Uri.parse("https://firebasestorage.googleapis.com/v0/b/indoornavigator-1fb19.appspot.com/o/little_duck.glb?alt=media&token=5149ab74-3424-4264-ab21-7e1bf634dab8"))
                 .setIsFilamentGltf(true)
                 .build()
                 .thenAccept {
@@ -209,6 +210,9 @@ class CreateRoute : AppCompatActivity(), TextToSpeech.OnInitListener {
                 renderable = model
                 renderableInstance?.animate(true)?.start()
                 worldPosition = Vector3(0f,0f,0f)
+                scaleController.isEnabled = false
+                translationController.isEnabled = false
+                localScale = Vector3(0.2F,0.2F,0.2F)
             })
 
 

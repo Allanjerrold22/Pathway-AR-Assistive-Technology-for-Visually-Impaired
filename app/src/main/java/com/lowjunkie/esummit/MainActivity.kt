@@ -1,5 +1,6 @@
 package com.lowjunkie.esummit
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -34,21 +35,10 @@ class MainActivity : AppCompatActivity() {
     var points: Geometry?= null
 
 
-    fun getDirection(destination: String){
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val response = fetchCoord(destination)
-            if(response.isSuccessful){
-                points = response.body()?.routes?.get(0)?.geometry
-                Log.d("Sinamike", points?.coordinates.toString())
-            }
-            else{
-                Log.d("Sinamike", response.message())
-            }
-        }
-    }
+    var masterList: List<Destination> ?= mutableListOf()
+    var masterList2: List<Destination> ?= mutableListOf()
 
-    var masterList: List<Destination> ?= null
 
     fun getData(){
         fireStore.collection("destination")
@@ -57,16 +47,25 @@ class MainActivity : AppCompatActivity() {
                 Log.d("TABY",  result.toString())
 
                 val itemList : MutableList<Destination> = arrayListOf()
+                val itemList2 : MutableList<Destination> = arrayListOf()
+
                 for (document in result) {
                     Log.d("TABY",  document.toString())
 
-                    itemList.add(
-                        document.toObject(Destination::class.java)
-                    )
+                    val doc = document.toObject(Destination::class.java)
+                    if(doc.type == "indoor"){
+                        itemList.add(doc)
+                    }else{
+                        itemList2.add(doc)
+                    }
+
 
                 }
-                masterList = itemList
-                homeAdapter.differ.submitList(itemList)
+                masterList = itemList + itemList2
+
+                indoorPathTV.text = itemList.size.toString() + "Paths saved"
+                outdoorPathTV.text = itemList2.size.toString() + "Paths saved"
+
             }
             .addOnFailureListener { exception ->
                 Log.w("TABY", "Error getting documents.", exception)
@@ -74,6 +73,7 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
+    @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -124,7 +124,20 @@ class MainActivity : AppCompatActivity() {
 //            val intent = Intent(this, MapActivity::class.java)
 //            startActivity(intent)
 //        }
+
 //
+
+        imageView3.setOnClickListener {
+            val intent = Intent(this, IndoorList::class.java)
+                startActivity(intent)
+        }
+
+
+        imageView2.setOnClickListener {
+            val intent = Intent(this, OutdoorList::class.java)
+                startActivity(intent)
+        }
+
         btnCreateRoute.setOnClickListener {
             val intent = Intent(this, CreateRoute::class.java)
             startActivity(intent)
@@ -132,27 +145,74 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        homeAdapter.setOnItemClickListener { destination->
-//           getDirection(
-//               destination.coordinateY + "," + destination.coordinateX
-//         )
-
-            if(destination.type == "indoor"){
-                val intent = Intent(this, AR::class.java)
-                intent.putExtra("key", destination)
-                startActivity(intent)
-            }else{
-                val intent = Intent(this, Details::class.java)
-                intent.putExtra("key", destination)
-                startActivity(intent)
-            }
-
-
-
-        }
+//        homeAdapter.setOnItemClickListener { destination->
+////           getDirection(
+////               destination.coordinateY + "," + destination.coordinateX
+////         )
+//
+//            if(destination.type == "indoor"){
+//                val intent = Intent(this, AR::class.java)
+//                intent.putExtra("key", destination)
+//                startActivity(intent)
+//            }else{
+//                val intent = Intent(this, Details::class.java)
+//                intent.putExtra("key", destination)
+//                startActivity(intent)
+//            }
+//
+//
+//
+//        }
 
     }
 
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_SPEECH_INPUT) {
+            if (resultCode == RESULT_OK && data != null) {
+
+                val res: ArrayList<String> =
+                    data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS) as ArrayList<String>
+
+                // on below line we are setting data
+                // to our output text view.
+                masterList?.forEach { item ->
+                    val firstStringOfRes = Objects.requireNonNull(res)[0]
+                    val itemName = item.name
+
+// Split the strings into words
+                    val wordsInRes = firstStringOfRes.split("\\s+".toRegex())
+                    val wordsInItemName = itemName.split("\\s+".toRegex())
+
+// Check if there's any intersection between the sets of words
+                    val intersection = wordsInRes.intersect(wordsInItemName)
+
+                    if (intersection.isNotEmpty()) {
+                        // Your code here
+
+                        // Your code here
+
+
+                                    if(item.type == "indoor"){
+                val intent = Intent(this, AR::class.java)
+                intent.putExtra("key", item)
+                startActivity(intent)
+            }else{
+                val intent = Intent(this, Details::class.java)
+                intent.putExtra("key", item)
+                startActivity(intent)
+            }
+                    }
+                }
+                Log.d("DIRECT",Objects.requireNonNull(res)[0])
+
+                //   outputTV.setText(
+                //     Objects.requireNonNull(res)[0]
+                // )
+            }
+        }
+    }
 
 
     private fun setupHomeRecyclerView(){
