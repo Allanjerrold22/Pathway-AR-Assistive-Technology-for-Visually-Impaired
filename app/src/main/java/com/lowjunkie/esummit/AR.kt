@@ -28,6 +28,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.nio.ByteBuffer
 import java.util.*
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -85,6 +95,16 @@ class AR : AppCompatActivity(), TextToSpeech.OnInitListener {
             objectPose0.y - objectPose1.y,
             objectPose0.z - objectPose1.z
         )
+
+    }
+
+
+    private fun createTempImageFile(imageBytes: ByteArray): File {
+        val tempFile = File.createTempFile("temp_image", ".jpg")
+        FileOutputStream(tempFile).use { fos ->
+            fos.write(imageBytes)
+        }
+        return tempFile
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -161,8 +181,45 @@ class AR : AppCompatActivity(), TextToSpeech.OnInitListener {
 
                     val currentFrame: Frame? = arSceneView.arFrame
                     val currentImage: Image? = currentFrame?.acquireCameraImage()
-                    val imageFormat: Int? = currentImage?.getFormat()
-                    Log.d("Tabrez", imageFormat.toString())
+
+
+                    // Convert the Image to a byte array
+                    val byteBuffer: ByteBuffer = currentImage?.planes?.get(0)?.buffer ?: break
+                    val imageBytes = ByteArray(byteBuffer.remaining())
+                    byteBuffer.get(imageBytes)
+
+// Save the byte array as a temporary file
+                    val tempFile = createTempImageFile(imageBytes)
+
+// Create the request body with the file
+                    val requestBody = MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("image", "image.jpg", RequestBody.create("image/jpeg".toMediaTypeOrNull(), tempFile))
+                        .build()
+
+// Create the request
+                    val request = Request.Builder()
+                        .url("https://fc57-2406-7400-b9-e94c-e521-238b-39cb-37c3.ngrok-free.app")
+                        .post(requestBody)
+                        .build()
+
+// Create OkHttpClient and execute the request
+                    val client = OkHttpClient()
+                    client.newCall(request).enqueue(object : okhttp3.Callback {
+                        override fun onFailure(call: okhttp3.Call, e: IOException) {
+                            // Handle failure
+                            e.printStackTrace()
+                        }
+
+                        override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
+                            // Handle success
+                            val responseBody = response.body?.string()
+                            Log.d("TABREZ", responseBody.toString())
+                            // Process the response as needed
+                        }
+                    })
+
+
                     currentImage?.close()
 
 

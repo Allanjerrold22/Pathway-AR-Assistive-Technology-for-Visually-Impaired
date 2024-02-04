@@ -3,4 +3,5 @@
     <string name="mapbox_access_token">pk.eyJ1IjoibG93anVua2llIiwiYSI6ImNsZWQ0NjVwcDAzY2czeHQ1YWd6OWkxc2sifQ.8_xyQ-o1-G0sywbw5hw_aQ</string>
     <string translatable="false" name="geospatial_pose">LAT/LNG: %.6f˚, %.6f˚\n\t\t\tACCURACY: %.2fm\nALTITUDE: %.2fm\n\t\t\tACCURACY: %.2fm\nHEADING: %.1f˚\n\t\t\tACCURACY: %.1f˚</string>
     <string name="earth_state">EarthState: %1$s\nTrackingState: %2$s\n%3$s</string>
+    <string name="base_url">https://fc57-2406-7400-b9-e94c-e521-238b-39cb-37c3.ngrok-free.app</string>
 </resources>

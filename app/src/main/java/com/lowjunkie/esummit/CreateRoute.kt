@@ -50,7 +50,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.lowjunkie.esummit.R
 import com.lowjunkie.esummit.models.Destination
-import kotlinx.android.synthetic.main.activity_main.btnUpload
+//import kotlinx.android.synthetic.main.activity_main.btnUpload
 import kotlinx.android.synthetic.main.create_route_screen.arNameET
 import kotlinx.android.synthetic.main.create_route_screen.btnARUpload
 import kotlinx.android.synthetic.main.upload_coord_screen.coordNameET

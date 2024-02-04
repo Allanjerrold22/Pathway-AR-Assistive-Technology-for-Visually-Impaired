@@ -64,13 +64,7 @@ class HomeAdapter : RecyclerView.Adapter<HomeAdapter.ItemViewHolder>() {
             }
             itemView.apply {
                 tvName.text = item.name
-                tvDept.text = item.dept
                 tvLocation.text = item.location
-                Glide
-                    .with(itemView.context)
-                    .load(item.imageUri)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(ivProduct)
             }
 
         }

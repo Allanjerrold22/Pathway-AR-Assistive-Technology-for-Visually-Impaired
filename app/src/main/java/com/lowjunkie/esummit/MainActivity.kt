@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         getData()
 
 
-        btnMic.setOnClickListener {
+        imageButtonMic.setOnClickListener {
             // on below line we are calling speech recognizer intent.
             val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
 
@@ -119,13 +119,13 @@ class MainActivity : AppCompatActivity() {
                     .show()
             }
         }
-
-        btnMap.setOnClickListener {
-            val intent = Intent(this, MapActivity::class.java)
-            startActivity(intent)
-        }
-
-        btnUpload.setOnClickListener {
+//
+//        btnMap.setOnClickListener {
+//            val intent = Intent(this, MapActivity::class.java)
+//            startActivity(intent)
+//        }
+//
+        btnCreateRoute.setOnClickListener {
             val intent = Intent(this, CreateRoute::class.java)
             startActivity(intent)
         }
@@ -158,9 +158,9 @@ class MainActivity : AppCompatActivity() {
     private fun setupHomeRecyclerView(){
         homeAdapter =
             HomeAdapter()
-        homeRV.apply {
-            adapter = homeAdapter
-            layoutManager = LinearLayoutManager(this@MainActivity)
-        }
+//        homeRV.apply {
+//            adapter = homeAdapter
+//            layoutManager = LinearLayoutManager(this@MainActivity)
+//        }
     }
 }
